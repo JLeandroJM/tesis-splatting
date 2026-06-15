@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Splatting de primitivas para representación y compresión multimedia</title>
+<meta name="description" content="Tesis: representación y compresión de video y audio mediante splatting de primitivas gaussianas 2D (Chebyshev) y átomos de Gabor.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <canvas id="splatfield" aria-hidden="true"></canvas>
+  <div class="hero-inner">
+    <p class="eyebrow-top">Tesis de pregrado · Ciencias de la Computación</p>
+    <!-- TODO: confirma el título definitivo de tu tesis -->
+    <h1>MBB-GS:Moving Gaussians - Splatting de primitivas para representación y <span class="accent">compresión multimedia</span></h1>
+    <p class="subtitle">Un mismo principio —sumar primitivas gaussianas 2D optimizadas por gradiente— para representar y comprimir <b>video</b> y <b>audio</b>.</p>
+
+    <!-- TODO: reemplaza con tus datos reales -->
+   <p class="authors">
+    <b>Jose Leandro Machaca Soloaga</b> &nbsp;y&nbsp; <b>Mauro Ianfranco Bobadilla Castillo</b> &nbsp;·&nbsp; Asesor: Eric Biagioli
+</p>
+<p class="affil">UTEC — 2026</p>
+
+    <div class="links">
+      <a class="btn primary" href="#"><span class="dot"></span> Tesis (PDF)</a>
+      <a class="btn" href="#">Código</a>
+      <a class="btn" href="#video">Ver resultados</a>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<!-- ============ ABSTRACT ============ -->
+<section id="abstract">
+  <div class="wrap">
+    <p class="eyebrow"><span class="splat"></span> Resumen</p>
+    <h2>Una representación continua, no una rejilla de píxeles</h2>
+    <p class="lead">Proponemos un marco unificado que representa contenido multimedia como una superposición de primitivas gaussianas 2D cuyos parámetros se ajustan por descenso de gradiente. En lugar de almacenar muestras (píxeles o amplitudes), almacenamos los coeficientes de un conjunto compacto de primitivas que reconstruyen la señal.</p>
+    <p>La línea principal es el <b>video</b>: cada parámetro de cada gaussiana (posición, opacidad, color, escala, orientación y profundidad) es un polinomio de <b>Chebyshev</b> en el tiempo, de modo que un único conjunto de coeficientes describe el clip completo y el tamaño del modelo es independiente del número de <i>frames</i>. Como segunda modalidad, mostramos que el mismo principio generaliza al <b>audio</b>: la <i>waveform</i> se representa con <b>átomos de Gabor</b> directamente sobre el eje temporal, sin STFT y modelando la fase de forma implícita. La evidencia proviene de nuestras propias ablaciones, no de comparaciones <i>head-to-head</i> contra implementaciones externas.</p>
+  </div>
+</section>
+
+<!-- ============ VIDEO ============ -->
+<section id="video">
+  <div class="wrap">
+    <p class="eyebrow"><span class="splat"></span> Video · Chebyshev 2DGS</p>
+    <h2>Reconstrucción de video con gaussianas temporales</h2>
+    <p class="lead">Cada gaussiana viaja en el tiempo a través de coeficientes de Chebyshev. Compara la verdad de referencia con nuestra reconstrucción: arrastra el divisor sobre un <i>frame</i>, o reproduce los dos clips en paralelo.</p>
+
+    <!-- COMPARACIÓN -->
+    <div data-tabs>
+      <div class="compare-tabs" role="tablist" aria-label="Modo de comparación">
+        <button class="tab" role="tab" aria-selected="true">Slider (frame)</button>
+        <button class="tab" role="tab" aria-selected="false">Lado a lado (loop)</button>
+      </div>
+
+      <!-- Panel 1: slider sobre frame -->
+      <div class="panel active" role="tabpanel">
+        <div class="cs" aria-label="Comparación arrastrable entre ground truth y reconstrucción">
+          <div class="layer base">
+            <img src="assets/frames/compare_gt_frame.png" alt="Ground truth">
+          </div>
+          <div class="layer top">
+            <img src="assets/frames/compare_ours_frame.png" alt="Reconstrucción">
+          </div>
+          <div class="handle" aria-hidden="true"></div>
+          <div class="grip" role="slider" tabindex="0" aria-label="Divisor de comparación"
+               aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">⇆</div>
+          <span class="tag left">Ground truth</span>
+          <span class="tag right"><span class="k">Ours</span> · Chebyshev 2DGS</span>
+        </div>
+        <p class="note" style="margin-top:12px">Frame de muestra. Reemplaza <code>assets/frames/*.png</code> por tu par GT / reconstrucción.</p>
+      </div>
+
+      <!-- Panel 2: videos lado a lado -->
+      <div class="panel" role="tabpanel">
+        <div data-synced-group>
+          <div class="sidebyside">
+            <div class="vid">
+              <video data-sync src="assets/videos/compare_gt.mp4" muted loop playsinline preload="metadata"></video>
+              <span class="vtag">Ground truth</span>
+            </div>
+            <div class="vid">
+              <video data-sync src="assets/videos/compare_ours.mp4" muted loop playsinline preload="metadata"></video>
+              <span class="vtag">Ours · Chebyshev 2DGS</span>
+            </div>
+          </div>
+          <div class="controls">
+            <button class="ctrl-btn" data-play>▶ <span class="lbl">Reproducir</span></button>
+            <button class="ctrl-btn ghost" data-restart>↺ Reiniciar ambos</button>
+          </div>
+        </div>
+        <p class="note" style="margin-top:12px">Los dos clips se mantienen sincronizados <i>frame</i> a <i>frame</i>. Reemplaza <code>assets/videos/compare_*.mp4</code> (mismo tamaño y duración).</p>
+      </div>
+    </div>
+
+    <!-- FIGURAS VIDEO -->
+    <h3>Ablaciones</h3>
+    <div class="figrow">
+      <figure>
+        <img src="assets/figures/video_loss_ablation.png" alt="PSNR por tipo de loss, motion gana">
+        <figcaption>La pérdida <b>motion</b> domina al resto de funciones de pérdida en todas las métricas.</figcaption>
+      </figure>
+      <figure>
+        <img src="assets/figures/video_qframe.png" alt="Degradación monótona del exponente de frame">
+        <figcaption>Subir el exponente de <i>frame</i> degrada la calidad de forma monótona; <b>q = 1</b> (equivalente a <i>motion</i>) es el óptimo.</figcaption>
+      </figure>
+    </div>
+
+    <!-- TABLA VIDEO -->
+    <div class="table-scroll">
+      <table>
+        <caption>Ablación de loss · 720p · 100k gaussianas · 600 frames · 800 epochs</caption>
+        <thead>
+          <tr><th>tipo_loss</th><th>PSNR</th><th>PSNR<sub>min</sub></th><th>SSIM</th><th>LPIPS</th><th>PSNR<sub>temp</sub></th></tr>
+        </thead>
+        <tbody>
+          <tr><td>baseline</td><td>31.83</td><td>28.10</td><td>0.962</td><td>0.0594</td><td>35.17</td></tr>
+          <tr><td>edge</td><td>31.88</td><td>28.05</td><td>0.963</td><td>0.0574</td><td>35.23</td></tr>
+          <tr class="win"><td>motion</td><td class="best">33.24</td><td class="best">30.32</td><td class="best">0.965</td><td class="best">0.0483</td><td class="best">36.88</td></tr>
+          <tr><td>temporal</td><td>31.93</td><td>28.32</td><td>0.963</td><td>0.0588</td><td>35.32</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout">
+      <span class="k">Mejor video · 150k gaussianas · 480 frames · 720×1080 · 1600 ep</span>
+      <p class="big">42.27 dB <span class="u">PSNR promedio</span></p>
+      <p style="margin:0;color:var(--ink-soft)">SSIM 0.984 · LPIPS 0.0175 · PSNR temporal 48.14. A esta densidad la calidad sube mucho; el <i>pruning</i> y la cuantización son el siguiente paso para mejorar el ratio de compresión.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ AUDIO ============ -->
+<section id="audio">
+  <div class="wrap">
+    <p class="eyebrow"><span class="splat"></span> Audio · Gabor splatting</p>
+    <h2>El mismo principio, ahora sobre la waveform</h2>
+    <p class="lead">La señal de audio se representa como suma de <b>átomos de Gabor</b> (una gaussiana modulada por un coseno) directamente en el tiempo, sin espectrograma y modelando la fase de forma implícita. Escucha el mismo instante en cada versión.</p>
+
+    <!-- A/B AUDIO -->
+    <div class="ab" data-audio-ab>
+      <audio preload="metadata"></audio>
+      <div class="sources" role="group" aria-label="Fuente de audio">
+        <button class="src" data-src="assets/audio/gt.wav" aria-pressed="false">
+          <span class="name"><span class="led"></span> Ground truth</span>
+          <span class="metric">referencia</span>
+        </button>
+        <button class="src" data-src="assets/audio/gabor.wav" aria-pressed="false">
+          <span class="name"><span class="led"></span> Gabor (nuestro)</span>
+          <span class="metric">SI-SDR <b>12.72 dB</b></span>
+        </button>
+        <button class="src" data-src="assets/audio/baseline_griffinlim.wav" aria-pressed="false">
+          <span class="name"><span class="led"></span> Baseline (Griffin-Lim)</span>
+          <span class="metric">SNR −2.59 dB</span>
+        </button>
+      </div>
+      <div class="transport">
+        <button class="play" aria-label="Reproducir o pausar">▶</button>
+        <div class="bar"><div class="fill"></div></div>
+        <span class="time">0:00 / 0:00</span>
+      </div>
+      <p class="hint">Cambiar de fuente conserva el instante: pulsa entre versiones para A/B en el mismo punto. Audios de muestra — reemplaza <code>assets/audio/*.wav</code>.</p>
+    </div>
+
+    <!-- FIGURAS AUDIO -->
+    <h3>Capacidad y el papel de la modulación</h3>
+    <div class="figrow">
+      <figure>
+        <img src="assets/figures/audio_capacity.png" alt="SI-SDR vs número de átomos, sweet spot 48k">
+        <figcaption>Calidad frente a número de átomos. El <b>punto de equilibrio</b> está en N = 48k: buena SI-SDR con ratio de compresión todavía favorable.</figcaption>
+      </figure>
+      <figure>
+        <img src="assets/figures/audio_gabor_vs_gauss.png" alt="Gabor vs gaussiana pura">
+        <figcaption>A igual número de primitivas, el átomo de Gabor supera por amplio margen a la gaussiana pura; ésta solo iguala con ~250k primitivas, donde ya no comprime. La modulación coseno es esencial.</figcaption>
+      </figure>
+    </div>
+
+    <!-- TABLA CAPACIDAD -->
+    <div class="table-scroll">
+      <table>
+        <caption>Capacidad · 30 s mono · loss SI-SDR · 6000 epochs</caption>
+        <thead>
+          <tr><th>N (átomos)</th><th>SI-SDR</th><th>LSD</th><th>Mel-L1</th><th>ratio fp16mix</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>16k</td><td>7.12</td><td>12.66</td><td>1.47</td><td>13.8×</td></tr>
+          <tr><td>32k</td><td>10.08</td><td>10.49</td><td>0.90</td><td>6.9×</td></tr>
+          <tr class="win"><td>48k</td><td>11.88</td><td class="best">8.31</td><td>0.671</td><td>4.59×</td></tr>
+          <tr><td>64k</td><td class="best">12.68</td><td>8.42</td><td class="best">0.63</td><td>3.4×</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- TABLA GABOR vs GAUSS -->
+    <div class="table-scroll">
+      <table>
+        <caption>Gabor vs gaussiana pura · 30 s mono · igual loss</caption>
+        <thead>
+          <tr><th>modelo</th><th>N</th><th>SI-SDR</th><th>LSD</th><th>tamaño</th><th>ratio</th></tr>
+        </thead>
+        <tbody>
+          <tr class="win"><td>Gabor</td><td>48k</td><td class="best">11.88</td><td class="best">8.31</td><td>960 KB</td><td>2.76×</td></tr>
+          <tr><td>Gaussiana pura</td><td>48k</td><td>−0.43</td><td>33.56</td><td>576 KB</td><td>4.59×</td></tr>
+          <tr><td>Gaussiana pura</td><td>250k</td><td>14.86</td><td>17.11</td><td>3.0 MB</td><td>0.88×</td></tr>
+          <tr><td>Gaussiana pura</td><td>500k</td><td>18.48</td><td>15.68</td><td>6.0 MB</td><td>0.44×</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ============ COMPARACIÓN HONESTA ============ -->
+<section id="honest">
+  <div class="wrap">
+    <p class="eyebrow"><span class="splat"></span> Comparación honesta</p>
+    <h2>Compresión honesta de waveform</h2>
+    <p class="lead">Frente a un enfoque por espectrograma con reconstrucción Griffin-Lim, el Gabor reconstruye la <i>waveform</i> sin reutilizar la fase original. Bajo esa condición —la única honesta para comparar compresión— la diferencia es marcada. Lo enmarcamos como <b>nichos complementarios</b>, no como descalificación: cada método comprime mejor en distintos regímenes de duración.</p>
+
+    <div class="figrow" style="grid-template-columns:1fr">
+      <figure>
+        <img src="assets/figures/audio_vs_companero.png" alt="SNR estéreo: compañero vs Gabor" style="max-width:640px">
+        <figcaption>SNR estéreo en compresión honesta de un clip de 30 s.</figcaption>
+      </figure>
+    </div>
+
+    <div class="table-scroll">
+      <table>
+        <caption>Reconstrucción honesta · 30 s estéreo</caption>
+        <thead>
+          <tr><th>enfoque</th><th>SNR estéreo</th><th>MSE estéreo</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Espectrograma + Griffin-Lim</td><td>−2.59</td><td>0.1485</td></tr>
+          <tr class="win"><td>Gabor Mid/Side (nuestro)</td><td class="best">+12.30</td><td class="best">0.0048</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note" style="margin-top:14px">El enfoque por espectrograma con la fase original alcanza SNR 13.66, pero guardar la fase ocupa tanto como la magnitud: no es compresión honesta. El Gabor modela la fase por construcción.</p>
+  </div>
+</section>
+
+<!-- ============ BIBTEX ============ -->
+<section id="bibtex">
+  <div class="wrap">
+    <p class="eyebrow"><span class="splat"></span> Cita</p>
+    <h2>BibTeX</h2>
+<pre class="bib">@mastersthesis{tunombre2026splatting,   % VERIFICAR clave y tipo
+  author = {[Tu nombre]},
+  title  = {Splatting de primitivas para representación y
+            compresión multimedia},
+  school = {[Universidad]},
+  year   = {2026},
+  note   = {Tesis de pregrado}
+}</pre>
+    <button class="copybib">Copiar BibTeX</button>
+  </div>
+</section>
+
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="wrap">
+    <p><b>Agradecimientos.</b> [Agradecimientos a asesor, jurado, infraestructura de cómputo, etc.]</p>
+    <p class="credit">Página inspirada en la plantilla de <a href="https://nerfies.github.io/">Nerfies</a>, liberada por sus autores. Figuras y métricas generadas a partir de los experimentos de la tesis.</p>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+<script src="js/video-compare.js"></script>
+<script src="js/audio-ab.js"></script>
+</body>
+</html>
