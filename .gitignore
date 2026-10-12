@@ -1,0 +1,5 @@
+.DS_Store
+# videos fuente sin procesar (los de la web están en assets/demo/)
+/videos_originales/
+/videos_175k_gaussianas/
+/top_gaussians/

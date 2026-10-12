@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Test del visor MBB-GS</title>
+<link rel="stylesheet" href="../css/style.css">
+<style>
+  body { padding: 28px 0 60px; }
+  h1 { font-family: var(--font-display); font-size: clamp(1.5rem, 5vw, 2rem); margin: 0 0 6px; }
+  section { padding: 26px 0; }
+  table { min-width: 0; font-size: 13.5px; }
+  th, td { padding: 7px 8px; }
+  .ok   { color: #1d7a3a; font-weight: 600; }
+  .mal  { color: #b3261e; font-weight: 600; }
+  .aviso{ color: var(--amber-ink); font-weight: 600; }
+  .estado { font-family: var(--font-mono); font-size: 13px; color: var(--ink-soft); }
+  .error { background: #fdecea; border: 1px solid #f3b6b0; border-left: 4px solid #b3261e;
+           border-radius: 10px; padding: 12px 14px; font-family: var(--font-mono); font-size: 13px; }
+  .imgs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
+  .imgs figure { margin: 0; }
+  .imgs canvas { width: 100%; height: auto; display: block; border-radius: 8px; background: #000; }
+  .imgs figcaption { font-family: var(--font-mono); font-size: 11.5px; margin-top: 4px; }
+  #lienzo { width: 100%; height: auto; display: block; border-radius: var(--radius); background: #000; }
+  .fila { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 12px 0; }
+  .fila input { font: inherit; font-family: var(--font-mono); width: 110px; padding: 10px; border-radius: 9px; border: 1px solid var(--line); min-height: 44px; }
+  .ctrl-btn { min-height: 44px; }
+  pre.resumen { white-space: pre-wrap; background: var(--paper-2); border: 1px solid var(--line); border-radius: 10px; padding: 12px; font-family: var(--font-mono); font-size: 12.5px; }
+  @media (max-width: 720px) { .imgs { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Test del visor MBB-GS</h1>
+  <p class="note">Valida el visor contra <code>docs/referencia/</code> y mide el rendimiento.
+    Opciones: <a href="?respaldo=1">?respaldo=1</a> simula un dispositivo sin <code>EXT_color_buffer_float</code>;
+    <a href="?respaldo=1&amp;8bits=1">?respaldo=1&amp;8bits=1</a> compone además en 8 bits;
+    <a href="?">sin opciones</a>.</p>
+
+  <section id="s-soporte"><h3>1. Dispositivo</h3><div class="cuerpo estado">Comprobando…</div></section>
+  <section id="s-modelo"><h3>2. Modelo de la referencia</h3><div class="cuerpo estado">Esperando…</div></section>
+  <section id="s-cpu"><h3>3. Evaluador CPU contra JSON</h3><div class="cuerpo estado">Esperando…</div></section>
+  <section id="s-gpu"><h3>4. Evaluación GPU contra JSON</h3><div class="cuerpo estado">Esperando…</div></section>
+  <section id="s-psnr"><h3>5. Render GPU contra PNG</h3><div class="cuerpo estado">Esperando…</div></section>
+  <section id="s-fps">
+    <h3>6. Rendimiento</h3>
+    <p class="note">Usa el modelo truncado de <code>models-dev/</code>. El prefijo de 25 000 gaussianas aproxima los modelos finales,
+      pero a 1080×720 cubre más píxeles que un modelo de 540×360: es una cota pesimista.</p>
+    <div class="fila">
+      <label class="estado">Gaussianas <input id="n-bench" type="number" min="1" value="25000" inputmode="numeric"></label>
+      <button class="ctrl-btn" id="b-bench" disabled>Medir</button>
+      <button class="ctrl-btn ghost" id="b-bench-manchas" disabled>Medir «ver manchas»</button>
+    </div>
+    <div class="cuerpo estado"></div>
+    <canvas id="lienzo"></canvas>
+  </section>
+  <section id="s-resumen"><h3>Resumen para copiar</h3><pre class="resumen" id="resumen">—</pre></section>
+</div>
+<script type="module" src="viewer-test.js"></script>
+</body>
+</html>

@@ -1,0 +1,34 @@
+{
+  "titulo": "Crawling",
+  "credito": "Fragmento del videoclip «Crawling». Derechos de sus respectivos titulares; uso académico y demostrativo.",
+  "fps": 24,
+  "duracion_s": 25.0,
+  "ancho": 640,
+  "alto": 268,
+  "reconstruccion": {
+    "archivo": "reconstruido.mp4",
+    "poster": "poster.webp",
+    "ancho": 960,
+    "alto": 408
+  },
+  "modelos": [
+    {
+      "archivo": "top020k.mp4",
+      "manchas": 20000
+    },
+    {
+      "archivo": "top080k.mp4",
+      "manchas": 80000
+    },
+    {
+      "archivo": "top140k.mp4",
+      "manchas": 140000
+    },
+    {
+      "archivo": "n175k.mp4",
+      "manchas": 175000,
+      "etiqueta": "175 000 manchas (todas)"
+    }
+  ],
+  "nota_modelos": "Es un solo modelo de 175 000 manchas: cada video usa solo las más importantes. Con pocas se ve lo esencial; con todas aparece el detalle."
+}

@@ -1,0 +1,34 @@
+{
+  "clips": [
+    {
+      "id": "cars",
+      "titulo": "Cars",
+      "carpeta": "cars",
+      "miniatura": "cars/miniatura.webp"
+    },
+    {
+      "id": "crawling",
+      "titulo": "Crawling",
+      "carpeta": "crawling",
+      "miniatura": "crawling/miniatura.webp"
+    },
+    {
+      "id": "star-wars",
+      "titulo": "Star Wars",
+      "carpeta": "star-wars",
+      "miniatura": "star-wars/miniatura.webp"
+    },
+    {
+      "id": "toy-story",
+      "titulo": "Toy Story 2",
+      "carpeta": "toy-story",
+      "miniatura": "toy-story/miniatura.webp"
+    },
+    {
+      "id": "xmen",
+      "titulo": "X-Men",
+      "carpeta": "xmen",
+      "miniatura": "xmen/miniatura.webp"
+    }
+  ]
+}

@@ -18,6 +18,8 @@
   --amber:      #E0A340;   /* ganador / ground truth */
   --amber-ink:  #8A5E12;
 
+  --media-ratio: 3 / 2;   /* videos y frames del comparador (1080×720) */
+
   --maxw: 940px;
   --radius: 14px;
   --shadow: 0 1px 2px rgba(20,23,28,.04), 0 8px 30px rgba(20,23,28,.06);
@@ -112,6 +114,13 @@ a:hover { text-decoration: underline; }
 .btn.primary:hover { background: var(--indigo-700); }
 .btn .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--amber); box-shadow: 0 0 8px var(--amber); }
 
+/* Hero compacto de la demo (index.html): en el celular, como mucho ~60vh */
+.hero-compacto .hero-inner { padding: 44px 24px 36px; }
+.hero-compacto .eyebrow-top { margin-bottom: 14px; }
+.hero-compacto h1 { font-size: clamp(1.9rem, 6vw, 3rem); max-width: none; margin-bottom: 10px; }
+.hero-compacto .subtitle { font-size: clamp(1rem, 2.6vw, 1.2rem); margin-bottom: 14px; }
+.hero-compacto .authors { font-size: 13.5px; margin-bottom: 20px; }
+
 /* ---------- SECCIONES ---------- */
 section { padding: 70px 0; border-bottom: 1px solid var(--line); }
 section:last-of-type { border-bottom: none; }
@@ -164,7 +173,7 @@ p { max-width: 72ch; }
   border-radius: var(--radius); overflow: hidden;
   box-shadow: var(--shadow); cursor: ew-resize;
   background: #000; user-select: none; touch-action: none;
-  aspect-ratio: 16 / 9;
+  aspect-ratio: var(--media-ratio);
 }
 .cs img { display: block; width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
 .cs .layer { position: absolute; inset: 0; }
@@ -197,7 +206,7 @@ p { max-width: 72ch; }
 .sidebyside { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 .vid {
   position: relative; border-radius: var(--radius); overflow: hidden;
-  box-shadow: var(--shadow); background: #000; aspect-ratio: 16 / 9;
+  box-shadow: var(--shadow); background: #000; aspect-ratio: var(--media-ratio);
 }
 .vid video { width: 100%; height: 100%; object-fit: cover; display: block; }
 .vid .vtag {
@@ -222,7 +231,7 @@ p { max-width: 72ch; }
 .figrow { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; margin-top: 28px; }
 figure { margin: 0; }
 figure img {
-  width: 100%; border-radius: 12px; border: 1px solid var(--line);
+  width: 100%; height: auto; border-radius: 12px; border: 1px solid var(--line);
   background: #fff; box-shadow: var(--shadow);
 }
 figcaption { font-size: .9rem; color: var(--muted); margin-top: 10px; max-width: 60ch; }
@@ -316,13 +325,225 @@ footer .wrap { font-size: 14px; }
 footer a { color: #c7cbe6; }
 footer .credit { font-family: var(--font-mono); font-size: 12px; margin-top: 10px; }
 
+/* ---------- VISOR ---------- */
+/* La proporción (--ar, --ar-num) la pone js/visor/ui.js desde la cabecera de
+   cada modelo: horizontal (3:2, 16:9) o vertical (9:16). La altura se limita
+   a 70vh para que en el celular quepan la imagen y los controles. */
+.visor { margin-top: 26px; }
+.visor-modelos {
+  display: flex; gap: 10px; overflow-x: auto; padding: 2px 2px 8px;
+  scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch;
+}
+.visor-modelo {
+  flex: 0 0 auto; scroll-snap-align: start;
+  display: flex; align-items: center; gap: 10px; min-height: 56px;
+  padding: 6px 14px 6px 6px; border-radius: 11px; cursor: pointer; text-align: left;
+  background: var(--paper-2); border: 1.5px solid var(--line); color: var(--ink);
+  transition: border-color .15s, background .15s;
+}
+.visor-modelo img { width: 64px; height: 42px; object-fit: cover; border-radius: 7px; background: var(--field); }
+.visor-modelo .nombre { display: block; font-family: var(--font-display); font-weight: 500; font-size: .98rem; }
+.visor-modelo .mb { display: block; font-family: var(--font-mono); font-size: 12px; color: var(--muted); }
+.visor-modelo[aria-pressed="true"] { border-color: var(--indigo); background: rgba(91,91,214,.06); }
+.visor-modelo:focus-visible { outline: 2px solid var(--indigo); outline-offset: 2px; }
+
+.visor-escena {
+  display: flex; justify-content: center; margin-top: 8px;
+  background: var(--field); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow);
+}
+.visor-marco {
+  position: relative; background: #000;
+  aspect-ratio: var(--ar, 3 / 2);
+  width: min(100%, calc(70vh * var(--ar-num, 1.5)));
+}
+@supports (height: 1svh) {
+  .visor-marco { width: min(100%, calc(70svh * var(--ar-num, 1.5))); }
+}
+.visor-marco canvas, .visor-poster {
+  position: absolute; inset: 0; width: 100%; height: 100%; display: block;
+}
+.visor-marco canvas { cursor: pointer; touch-action: manipulation; }
+.visor-poster { object-fit: cover; opacity: .45; }
+.visor-nunca {
+  position: absolute; top: 12px; left: 12px; right: 12px; width: fit-content; max-width: calc(100% - 24px);
+  font-family: var(--font-mono); font-size: 12.5px; line-height: 1.35; letter-spacing: .02em;
+  padding: 7px 11px; border-radius: 8px; color: #fff;
+  background: rgba(10,12,24,.74); border: 1px solid var(--amber);
+  backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px);
+  pointer-events: none;
+}
+.visor-carga {
+  position: absolute; left: 16px; right: 16px; bottom: 16px;
+  font-family: var(--font-mono); font-size: 12.5px; color: #fff;
+}
+.visor-carga .bar { height: 6px; border-radius: 4px; background: rgba(255,255,255,.18); margin-top: 8px; overflow: hidden; }
+.visor-carga .fill { height: 100%; width: 0; background: var(--amber); transition: width .15s; }
+.visor-mensaje {
+  position: absolute; inset: 0; display: grid; place-items: center; padding: 20px;
+  text-align: center; color: #EAEBF2; font-size: .98rem; background: rgba(10,12,24,.55);
+}
+.visor-mensaje small { color: #9aa0c4; font-family: var(--font-mono); font-size: 12px; }
+.visor [hidden] { display: none !important; }
+
+.visor-controles {
+  display: grid; gap: 16px; margin-top: 14px; padding: 18px;
+  border-radius: var(--radius); background: var(--paper-2); border: 1px solid var(--line); box-shadow: var(--shadow);
+  transition: opacity .2s;
+}
+.visor-controles.inactivo { opacity: .45; pointer-events: none; }
+.visor-fila { display: flex; align-items: center; gap: 14px; }
+.visor-tiempo { font-family: var(--font-mono); font-size: 12.5px; color: var(--muted); min-width: 84px; text-align: right; }
+.visor-etiqueta { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.visor-etiqueta span:first-child { font-family: var(--font-display); font-weight: 500; }
+.visor-manchas-valor { font-family: var(--font-mono); font-size: 13px; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+.visor-tecnico { font-size: 11.5px; margin: 0; max-width: none; }
+
+/* slider táctil: 44 px de alto; el carril deja 12 px a cada lado para el pulgar */
+.vslider {
+  --v: 0;
+  position: relative; flex: 1 1 auto; height: 44px; cursor: pointer;
+  touch-action: pan-y; user-select: none; -webkit-user-select: none;
+}
+.vslider .carril { position: absolute; left: 12px; right: 12px; top: 50%; height: 8px; margin-top: -4px; border-radius: 5px; background: var(--line); }
+.vslider .relleno { height: 100%; width: calc(var(--v) * 100%); border-radius: 5px; background: var(--indigo); }
+.vslider .pulgar {
+  position: absolute; top: 50%; left: calc(var(--v) * 100%);
+  width: 26px; height: 26px; margin: -13px 0 0 -13px; border-radius: 50%;
+  background: #fff; border: 2px solid var(--indigo); box-shadow: 0 1px 6px rgba(20,23,28,.25);
+}
+.vslider:focus-visible { outline: 2px solid var(--indigo); outline-offset: 2px; border-radius: 10px; }
+
+.segmentado {
+  display: inline-flex; gap: 3px; padding: 3px; justify-self: start;
+  background: var(--paper); border: 1px solid var(--line); border-radius: 12px;
+}
+.segmentado button {
+  min-height: 44px; padding: 0 16px; border: 0; border-radius: 9px; cursor: pointer;
+  background: transparent; color: var(--ink-soft); font-family: var(--font-mono); font-size: 13px;
+  white-space: nowrap;
+}
+.segmentado button[aria-pressed="true"] { background: var(--ink); color: #fff; }
+.segmentado button:focus-visible { outline: 2px solid var(--indigo); outline-offset: 1px; }
+
+/* ---------- DEMO ---------- */
+/* Contenido generado por js/demo/demo.js. Cada .medio lleva la proporción del
+   clip en --ar / --ar-num (de clip.json, o 16:9 si no hay datos). */
+.demo { margin-top: 22px; }
+.chips {
+  display: flex; gap: 8px; overflow-x: auto; padding: 2px 2px 8px;
+  scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch;
+}
+.chips { scrollbar-width: none; }
+.chips::-webkit-scrollbar { display: none; }
+.chip {
+  flex: 0 0 auto; scroll-snap-align: start;
+  display: flex; align-items: center; gap: 8px; min-height: 48px;
+  padding: 5px 14px 5px 5px; border-radius: 11px; cursor: pointer;
+  background: var(--paper-2); border: 1.5px solid var(--line); color: var(--ink);
+  font-family: var(--font-display); font-weight: 500; font-size: .95rem; white-space: nowrap;
+  transition: border-color .15s, background .15s;
+}
+.chip:not(:has(img)) { padding-left: 14px; }
+.chip img { width: 64px; height: 36px; object-fit: cover; border-radius: 7px; background: var(--field); }
+.chip[aria-pressed="true"] { border-color: var(--indigo); background: rgba(91,91,214,.08); }
+.chip:focus-visible { outline: 2px solid var(--indigo); outline-offset: 2px; }
+
+.demo-bloque { margin-top: 30px; }
+.demo-bloque h3 { margin: 0 0 12px; }
+.demo-bloque h4 { font-family: var(--font-display); font-weight: 500; font-size: 1rem; margin: 18px 0 8px; color: var(--ink-soft); }
+.demo-nota { font-size: .92rem; color: var(--ink-soft); margin: 12px 0 0; }
+.demo-tecnico { font-size: 11.5px; margin: 6px 0 0; }
+.credito-clip { font-family: var(--font-mono); font-size: 11.5px; color: var(--muted); margin: 30px 0 0; }
+
+.rejilla, .par { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 10px; }
+.rejilla.impar > :first-child { grid-column: 1 / -1; }
+.demo-reconstruido .medio-fig { width: min(100%, calc(70vh * var(--ar-num, 1.78))); margin: 0 auto; }
+.medio-fig { margin: 0; min-width: 0; }
+.medio {
+  position: relative; aspect-ratio: var(--ar, 16 / 9);
+  background: #000; border-radius: 10px; overflow: hidden; box-shadow: var(--shadow);
+}
+.medio video, .medio img {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; display: block;
+}
+.medio-fig figcaption { margin-top: 6px; font-size: 13px; line-height: 1.3; color: var(--ink-soft); max-width: none; }
+.grupo-ctrl { margin-top: 10px; }
+.grupo-ctrl .ctrl-btn { min-height: 44px; }
+
+/* marcador de archivo que falta (404) */
+.pendiente {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  padding: 8px; text-align: center; border-radius: inherit;
+  background: #E9EBEF; border: 2px dashed #B7BCC6; color: var(--muted);
+  font-family: var(--font-mono); font-size: 11.5px; line-height: 1.35; overflow-wrap: anywhere;
+}
+.pendiente-linea { position: static; min-height: 44px; margin: 14px 0 0; border-radius: 10px; }
+.demo [hidden] { display: none !important; }
+
+/* explorador de un instante */
+.frames { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+.frame-btn {
+  min-width: 0; min-height: 48px; padding: 5px 2px; cursor: pointer;
+  border-radius: 10px; border: 1px solid var(--line); background: var(--paper-2); color: var(--ink);
+  font-family: var(--font-mono); font-size: 12.5px; line-height: 1.2; white-space: nowrap;
+}
+.frame-btn small { display: block; font-size: 11px; color: var(--muted); }
+.frame-btn[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: #fff; }
+.frame-btn[aria-pressed="true"] small { color: #c7cbe6; }
+.frame-btn:focus-visible { outline: 2px solid var(--indigo); outline-offset: 2px; }
+.explora-img { display: flex; justify-content: center; margin-top: 6px; }
+.explora-img .medio-fig { width: min(100%, calc(70vh * var(--ar-num, 1.78))); }
+@supports (height: 1svh) {
+  .explora-img .medio-fig { width: min(100%, calc(70svh * var(--ar-num, 1.78))); }
+}
+.explora-texto { text-align: center; font-size: .95rem; color: var(--ink-soft); margin: 10px auto 4px; }
+.explora .segmentado { margin-top: 12px; }
+
+.escala { margin-top: 14px; transition: opacity .2s; }
+.escala.inactiva { opacity: .4; }
+.escala-titulo { display: flex; justify-content: space-between; align-items: baseline; }
+.escala-titulo span:first-child { font-family: var(--font-display); font-weight: 500; }
+.escala-valor { font-family: var(--font-mono); font-size: 13px; color: var(--ink-soft); }
+.escala input[type="range"] {
+  -webkit-appearance: none; appearance: none; display: block;
+  width: 100%; height: 44px; margin: 0; background: transparent; cursor: pointer;
+}
+.escala input[type="range"]::-webkit-slider-runnable-track { height: 8px; border-radius: 5px; background: var(--line); }
+.escala input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 28px; height: 28px; margin-top: -10px; border-radius: 50%;
+  background: #fff; border: 2px solid var(--indigo); box-shadow: 0 1px 6px rgba(20,23,28,.25);
+}
+.escala input[type="range"]::-moz-range-track { height: 8px; border-radius: 5px; background: var(--line); }
+.escala input[type="range"]::-moz-range-thumb {
+  width: 24px; height: 24px; border-radius: 50%;
+  background: #fff; border: 2px solid var(--indigo); box-shadow: 0 1px 6px rgba(20,23,28,.25);
+}
+.escala input[type="range"]:focus-visible { outline: 2px solid var(--indigo); outline-offset: 2px; border-radius: 10px; }
+.escala-marcas { display: flex; justify-content: space-between; margin: 0 -6px; }
+.escala-marcas button {
+  min-height: 44px; min-width: 44px; padding: 0 4px; border: 0; background: transparent; cursor: pointer;
+  font-family: var(--font-mono); font-size: 12px; color: var(--muted); white-space: nowrap;
+}
+.escala-marcas button.activa { color: var(--indigo-700); font-weight: 600; }
+
+footer .pie-tesis { font-family: var(--font-display); font-weight: 500; font-size: 1.05rem; color: #EAEBF2; }
+
 /* ---------- RESPONSIVE ---------- */
 @media (max-width: 720px) {
   body { font-size: 16px; }
   .figrow { grid-template-columns: 1fr; gap: 22px; }
   .sidebyside { grid-template-columns: 1fr; }
   .hero-inner { padding: 70px 24px 50px; }
+  .wrap, .hero-inner { padding-left: 16px; padding-right: 16px; }
+  .hero-compacto .hero-inner { padding-top: 30px; padding-bottom: 26px; }
+  .hero-compacto .eyebrow-top { margin-bottom: 10px; }
   section { padding: 54px 0; }
+  .visor-controles { padding: 14px; gap: 14px; }
+  .segmentado { display: flex; justify-self: stretch; }
+  .segmentado button { flex: 1 1 auto; padding: 0 8px; font-size: 12.5px; }
+  .visor-fila { gap: 10px; }
+  .visor-tiempo { min-width: 0; }
+  .visor-nunca { font-size: 11.5px; top: 8px; left: 8px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

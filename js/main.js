@@ -1,7 +1,9 @@
 /* ============================================================
    Hero: campo ambiental de "splats" gaussianos (el método
    representa una señal como suma de primitivas gaussianas).
-   Respeta prefers-reduced-motion. + tabs + copiar BibTeX.
+   Respeta prefers-reduced-motion y se pausa mientras el visor
+   interactivo está activo (evento "visor:activo").
+   + tabs + copiar BibTeX.
    ============================================================ */
 
 function initSplatField() {
@@ -10,6 +12,7 @@ function initSplatField() {
   const ctx = canvas.getContext("2d");
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   let W, H, dpr, blobs;
+  let raf = 0, pausado = false;
 
   const palette = [
     [224,163,64],   // ámbar
@@ -68,12 +71,19 @@ function initSplatField() {
       if (b.y < -200) b.y = H + 200; if (b.y > H + 200) b.y = -200;
     }
     draw();
-    requestAnimationFrame(step);
+    raf = pausado ? 0 : requestAnimationFrame(step);
   }
 
   resize(); makeBlobs(); draw();
   window.addEventListener("resize", () => { resize(); makeBlobs(); draw(); });
-  if (!reduce) requestAnimationFrame(step);
+  if (!reduce) raf = requestAnimationFrame(step);
+
+  // el visor WebGL avisa cuando está activo: no competir por la GPU
+  document.addEventListener("visor:activo", (e) => {
+    pausado = e.detail.activo;
+    if (pausado && raf) { cancelAnimationFrame(raf); raf = 0; }
+    if (!pausado && !reduce && !raf) raf = requestAnimationFrame(step);
+  });
 }
 
 function initTabs() {

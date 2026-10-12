@@ -1,0 +1,39 @@
+{
+  "casos": [
+    {
+      "json": "frame0000.json",
+      "nombre": "frame0000",
+      "png": "frame0000.png",
+      "tau": -1.0
+    },
+    {
+      "json": "frame0240.json",
+      "nombre": "frame0240",
+      "png": "frame0240.png",
+      "tau": 0.0020876826722338038
+    },
+    {
+      "json": "entre_frames_240_241.json",
+      "nombre": "entre_frames_240_241",
+      "png": "entre_frames_240_241.png",
+      "tau": 0.0041753653444676075
+    }
+  ],
+  "modelo": {
+    "alto": 720,
+    "ancho": 1080,
+    "archivo": "musical-20s.bin",
+    "comando": "python demo_mode/render_referencia_cpu.py vectores --modelo demo_mode/export_web/musical-20s.bin --salida demo_mode/referencia",
+    "grados": {
+      "color": 5,
+      "depth": 2,
+      "mu": 12,
+      "opacity": 10,
+      "scale": 4,
+      "theta": 3
+    },
+    "n_frames": 480,
+    "n_gaussianas": 150000,
+    "sha256": "7c6bbeb9329a2652c6b7e1a012246d288b726950cb9403d8518da484c4576fbd"
+  }
+}

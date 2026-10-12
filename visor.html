@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Visor WebGL2 (experimental) · MBB-GS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ============ CABECERA ============ -->
+<header class="hero hero-experimental">
+  <div class="hero-inner">
+    <p class="eyebrow-top">Experimental · no enlazado desde la demo</p>
+    <h1>Visor WebGL2 en vivo</h1>
+    <p class="subtitle">Renderiza el modelo en tu dispositivo, en tiempo real. En celulares puede descargar lento e ir a saltos: la demo principal usa videos pre-renderizados.</p>
+    <div class="links">
+      <a class="btn" href="index.html">← Volver a la demo</a>
+      <a class="btn" href="test/viewer-test.html">Página de test</a>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<!-- ============ VISOR ============ -->
+<section id="viewer">
+  <div class="wrap">
+    <p class="eyebrow"><span class="splat"></span> Visor interactivo</p>
+    <h2>Un video hecho de manchas de color</h2>
+    <p class="lead">Este video no está guardado como imágenes: son miles de manchas de color que se mueven con el tiempo, y tu dispositivo las dibuja ahora mismo. Cambia cuántas se usan, ralentiza la reproducción y detente entre dos fotogramas: el modelo calcula instantes que la cámara nunca grabó.</p>
+    <p class="note">Técnico: gaussianas 2D cuyos parámetros son polinomios de Chebyshev en el tiempo, evaluadas y compuestas con WebGL2 en el navegador.</p>
+
+    <div class="visor" data-visor data-manifest="assets/models/manifest.json">
+      <div class="visor-modelos" role="group" aria-label="Modelo"></div>
+
+      <div class="visor-escena">
+        <div class="visor-marco">
+          <img class="visor-poster" alt="" hidden>
+          <canvas aria-label="Video reconstruido con manchas gaussianas. Toca para reproducir o pausar." hidden></canvas>
+          <span class="visor-nunca" hidden>✨ Este instante nunca se grabó: lo calculó el modelo</span>
+          <div class="visor-carga" hidden>
+            <span class="visor-carga-texto">Descargando modelo…</span>
+            <div class="bar"><div class="fill"></div></div>
+          </div>
+          <div class="visor-mensaje" hidden></div>
+        </div>
+      </div>
+
+      <div class="visor-controles inactivo">
+        <div class="visor-fila">
+          <button class="play" type="button" aria-label="Reproducir">▶</button>
+          <div class="vslider vslider-tiempo" role="slider" tabindex="0" aria-label="Tiempo" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+            <div class="carril"><div class="relleno"></div><div class="pulgar"></div></div>
+          </div>
+          <span class="visor-tiempo">0:00 / 0:00</span>
+        </div>
+
+        <div class="segmentado" role="group" aria-label="Velocidad">
+          <button type="button" data-velocidad data-valor="normal" aria-pressed="true">Normal</button>
+          <button type="button" data-velocidad data-valor="lenta" aria-pressed="false">Lenta ×4</button>
+          <button type="button" data-velocidad data-valor="muy-lenta" aria-pressed="false">Muy lenta ×10</button>
+        </div>
+
+        <div class="visor-manchas">
+          <div class="visor-etiqueta">
+            <span id="visor-manchas-nombre">Número de manchas</span>
+            <span class="visor-manchas-valor">—</span>
+          </div>
+          <div class="vslider vslider-manchas" role="slider" tabindex="0" aria-labelledby="visor-manchas-nombre" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100">
+            <div class="carril"><div class="relleno"></div><div class="pulgar"></div></div>
+          </div>
+        </div>
+
+        <div class="segmentado" role="group" aria-label="Modo de vista">
+          <button type="button" data-modo data-valor="imagen" aria-pressed="true">Video</button>
+          <button type="button" data-modo data-valor="manchas" aria-pressed="false">Ver manchas</button>
+        </div>
+
+        <p class="visor-tecnico note"></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<script src="js/main.js"></script>
+<script type="module" src="js/visor/ui.js"></script>
+</body>
+</html>
