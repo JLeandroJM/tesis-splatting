@@ -30,5 +30,54 @@
       "etiqueta": "175 000 manchas (todas)"
     }
   ],
-  "nota_modelos": "Es un solo modelo de 175 000 manchas: cada video usa solo las más importantes. Con pocas se ve lo esencial; con todas aparece el detalle."
+  "nota_modelos": "Es un solo modelo de 175 000 manchas: cada video usa solo las más importantes. Con pocas se ve lo esencial; con todas aparece el detalle.",
+  "frames": [
+    {
+      "j": 29,
+      "segundo": 1.21
+    },
+    {
+      "j": 86,
+      "segundo": 3.58
+    },
+    {
+      "j": 144,
+      "segundo": 6.0
+    },
+    {
+      "j": 201,
+      "segundo": 8.38
+    },
+    {
+      "j": 259,
+      "segundo": 10.79
+    },
+    {
+      "j": 316,
+      "segundo": 13.17
+    },
+    {
+      "j": 374,
+      "segundo": 15.58
+    },
+    {
+      "j": 431,
+      "segundo": 17.96
+    },
+    {
+      "j": 489,
+      "segundo": 20.38
+    },
+    {
+      "j": 546,
+      "segundo": 22.75
+    }
+  ],
+  "ks": [
+    100,
+    1000,
+    10000,
+    50000,
+    175000
+  ]
 }

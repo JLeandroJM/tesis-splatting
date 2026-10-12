@@ -113,8 +113,8 @@ la estructura antes que el contenido.
 | `frame_<j>_original.webp` | «Explora un instante», botón Original |
 | `miniatura.webp` | chip del clip (opcional; la ruta la da el manifest) |
 
-`<j>` son los 5 índices de `frames` y `<K>` los 5 valores de `ks`: 5 × 5 × 2 + 5
-= 55 imágenes por clip. Los videos deben tener la misma duración y fps (se
+`<j>` son los índices de `frames` y `<K>` los valores de `ks`: con 10 cuadros
+y 5 valores, 10 × (5 × 2 + 1) = 110 imágenes por clip. Los videos deben tener la misma duración y fps (se
 reproducen sincronizados, en bucle y sin sonido); H.264 en `.mp4` es lo más
 compatible con iPhone. Instrucciones para generarlos: `docs/INSTRUCCIONES_CLIPS.md`.
 
@@ -134,7 +134,7 @@ compatible con iPhone. Instrucciones para generarlos: `docs/INSTRUCCIONES_CLIPS.
     { "archivo": "n100k.mp4", "manchas": 100000, "psnr": 34.0, "ssim": 0.96 },
     { "archivo": "n175k.mp4", "manchas": 175000, "psnr": 35.2, "ssim": 0.97 }
   ],
-  "frames": [ { "j": 48, "segundo": 2.0 }, … 5 en total ],
+  "frames": [ { "j": 48, "segundo": 2.0 }, … ],
   "ks": [100, 1000, 10000, 50000, 175000]
 }
 ```
@@ -156,7 +156,7 @@ compatible con iPhone. Instrucciones para generarlos: `docs/INSTRUCCIONES_CLIPS.
   sección «Explora un instante» no se muestra.**
 
 Ejemplo real: `assets/demo/star-wars/clip.json`. Los videos fuente sin procesar
-(`videos_originales/`, `videos_175k_gaussianas/`, `top_gaussians/`) están fuera
+(`videos_originales/`, `videos_175k_gaussianas/`, `top_gaussians/`, `fotos_web/`) están fuera
 de git; los de la web se generan recortando y reduciendo esos con ffmpeg.
 
 ## Visor WebGL2 (experimental): modelos

@@ -292,9 +292,10 @@ function normalizar(datos, meta) {
   const d = datos || {};
   const ancho = Number(d.ancho), alto = Number(d.alto);
   const conProporcion = ancho > 0 && alto > 0;
-  let frames = Array.isArray(d.frames) ? d.frames.slice(0, N_FRAMES_EXPLORA) : [];
+  let frames = Array.isArray(d.frames) ? d.frames : [];
   frames = frames.map((f) => ({ j: f.j, segundo: f.segundo ?? (d.fps ? f.j / d.fps : null) }));
-  while (frames.length < N_FRAMES_EXPLORA) frames.push({ j: null, segundo: null });
+  // sin clip.json se enseñan N_FRAMES_EXPLORA botones de ejemplo
+  if (!frames.length) frames = Array.from({ length: N_FRAMES_EXPLORA }, () => ({ j: null, segundo: null }));
   return {
     titulo: d.titulo || meta.titulo,
     credito: d.credito,
